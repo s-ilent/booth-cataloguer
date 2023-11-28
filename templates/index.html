@@ -125,9 +125,16 @@
     </div>
     <script>
         document.querySelectorAll('.item').forEach(item => {
-            item.addEventListener('click', () => {
-                item.querySelector('.details').classList.toggle('active');
-                item.querySelector('h2').classList.toggle('active');
+            let down, up;
+            item.addEventListener('mousedown', () => {
+                down = new Date().getTime();
+            });
+            item.addEventListener('mouseup', () => {
+                up = new Date().getTime();
+                if (up - down < 200) {
+                    item.querySelector('.details').classList.toggle('active');
+                    item.querySelector('h2').classList.toggle('active');
+                }
             });
         });
 
