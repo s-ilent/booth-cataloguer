@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Library Catalogue</title>
+    <style>
+        body {
+            font-family: 'MS PGothic', sans-serif;
+            padding-top: 50px;
+            background: black;
+        }
+        .search-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            display: flex;
+            align-items: center;
+        }
+        .search-bar input[type="range"] {
+            width: 100px;
+            height: 25px;
+            margin-left: 10px;
+        }
+        :root {
+            --item-size: 300px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(var(--item-size), 1fr));
+            gap: 0;
+        }
+        .item {
+            position: relative;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px #000000;
+            cursor: pointer;
+        }
+        .item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .item h2 {
+            position: absolute;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            margin: 0;
+            padding: 10px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .item:hover h2 {
+            -webkit-line-clamp: none;
+        }
+        .details {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            max-height: 100%;
+            padding: 20px;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-shadow: 2px 2px 4px #000000;
+            text-align: left;
+            line-height: 0.9;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .details.active {
+            display: block;
+        }
+        .details h3 {
+            display: none;
+        }
+        .details.active h3 {
+            display: block;
+        }
+        .details a {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-bar">
+        <input type="text" id="search" placeholder="Search...">
+        <select id="sort">
+            <option value="name">Name</option>
+            <option value="author">Author</option>
+            <option value="id">ID</option>
+            <option value="order">Order</option>
+        </select>
+        <select id="order">
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
+        </select>
+        <input type="range" id="size" min="100" max="600" value="300">
+    </div>
+    <div class="grid" id="grid">
+        {% for item in items %}
+        <div class="item" data-name="{{ item['Item Name'] }}" data-author="{{ item['Author Name'] }}" data-id="{{ item['Item URL'].split('/')[-1] }}" data-order="{{ item['Order'] }}" >
+            <img src="{{ item['Thumbnail Link'] }}" alt="{{ item['Item Name'] }}">
+            <h2>{{ item['Item Name'] }}</h2>
+            <div class="details">
+                <h3>{{ item['Item Name'] }}</h3>
+                <p><a href="{{ item['Item URL'] }}">Item URL</a> &middot; <a href="{{ item['Author URL'] }}">Author URL</a></p>
+                <ul>
+                    {% for file in item['Files'] %}
+                    <li><a href="{{ file['link'] }}">{{ file['name'] }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+        document.querySelectorAll('.item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.querySelector('.details').classList.toggle('active');
+                item.querySelector('h2').classList.toggle('active');
+            });
+        });
+
+        document.getElementById('search').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.item').forEach(item => {
+                const name = item.getAttribute('data-name').toLowerCase();
+                const author = item.getAttribute('data-author').toLowerCase();
+                if (name.includes(term) || author.includes(term)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('order').addEventListener('change', () => {
+            document.getElementById('sort').dispatchEvent(new Event('change'));
+        });
+
+        document.getElementById('sort').addEventListener('change', (e) => {
+            const grid = document.getElementById('grid');
+            const items = Array.from(grid.getElementsByClassName('item'));
+            if (e.target.value === 'name') {
+                items.sort((a, b) => a.getAttribute('data-name').localeCompare(b.getAttribute('data-name')));
+            } else if (e.target.value === 'author') {
+                items.sort((a, b) => a.getAttribute('data-author').localeCompare(b.getAttribute('data-author')));
+            } else if (e.target.value === 'id') {
+                items.sort((a, b) => parseInt(a.getAttribute('data-id')) - parseInt(b.getAttribute('data-id')));
+            } else if (e.target.value === 'order') {
+                items.sort((a, b) => parseInt(a.getAttribute('data-order')) - parseInt(b.getAttribute('data-order')));
+            }
+            if (order.value === 'desc') {
+                items.reverse();
+            }
+            items.forEach(item => grid.appendChild(item));
+        });
+
+        document.getElementById('size').addEventListener('input', (e) => {
+            const size = e.target.value;
+            document.documentElement.style.setProperty('--item-size', `${size}px`);
+            document.getElementById('sort').dispatchEvent(new Event('change'));
+        });
+    </script>
+</body>
+</html>
