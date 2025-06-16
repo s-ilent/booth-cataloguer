@@ -1,10 +1,16 @@
 # Booth Cataloguer
-This is a set of two scripts that will let you create a catalogue of your Booth library.
+This is a set of scripts that will let you create a catalogue of your Booth library.
+* The **Downloader** will download your Booth library to a local folder. 
 * The **Booth Cataloguer Extract** will convert a set of saved web pages into a JSON and CSV file that can be parsed easily.
-* The **Application** will serve a web page with a searchable index of the items in the library, using the JSON.
+* The **Application** will generate a web page with a searchable index of the items in the library, using the JSON.
 
 ## How do I use this?
 You'll need to download your library webpages so it can parse them, and then run the extractor. After that, you can generate the catalogue.
+
+#### Download the library
+1. Save your Booth cookies from your browser into a cookies.txt.
+2. Update target_dir in the downloader script to point to a folder.
+3. Run the script.
 
 #### Create the catalog
 To run the script, you'll need `pandas`, `json`, and `BeautifulSoup`.
@@ -32,7 +38,6 @@ Running the website live is useful for debugging. To start the website, you'll n
 3. Run the script.
 
 ## Future Ideas
-- Automatically downloading the library would be useful.
 - It might be cool to do more with the library page.
 - The CSV isn't used for anything.
 
